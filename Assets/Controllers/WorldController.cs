@@ -52,10 +52,7 @@ public class WorldController : MonoBehaviour
     World.RandomizeTiles();
   }
 
-  void Update()
-  {
-
-  }
+  void Update() { }
 
   // This function is called whenever a tile's type gets changed.
   void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
@@ -72,6 +69,14 @@ public class WorldController : MonoBehaviour
     {
       Debug.LogError("OnTileTypeChanged - Unrecognized tile type.");
     }
+  }
+
+  public Tile GetTileAtWorldCoord(Vector3 coord)
+  {
+    int x = Mathf.FloorToInt(coord.x);
+    int y = Mathf.FloorToInt(coord.y);
+
+    return World.GetTileAt(x, y);
   }
 
 }
