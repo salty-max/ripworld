@@ -9,6 +9,7 @@ public class WorldController : MonoBehaviour
 {
   public static WorldController Instance { get; protected set; }
 
+  public Sprite wallSprite; // FIXME
   // The only tile sprite right now
   public Sprite floorSprite;
 
@@ -16,6 +17,7 @@ public class WorldController : MonoBehaviour
   public World World { get; protected set; }
 
   Dictionary<Tile, GameObject> tileGameObjectMap;
+  Dictionary<InstalledObject, GameObject> installedObjectGameObjectMap;
 
   void Start()
   {
@@ -28,8 +30,11 @@ public class WorldController : MonoBehaviour
     // Create a world with Empty tiles
     World = new World();
 
+    World.RegisterInstalledObjectCreated(OnInstalledObjectCreated);
+
     // Instantiate dictionary that tracks which GameObject is rendering which Tile data
     tileGameObjectMap = new Dictionary<Tile, GameObject>();
+    installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
 
     // Create a GameObject for each tile, so they show visually. (and redunt reduntantly)
     for (int x = 0; x < World.Width; x++)
@@ -125,6 +130,35 @@ public class WorldController : MonoBehaviour
     int y = Mathf.FloorToInt(coord.y);
 
     return World.GetTileAt(x, y);
+  }
+
+  public void OnInstalledObjectCreated(InstalledObject obj)
+  {
+    // Debug.Log("OnInstalledObjectCreated");
+    // Create a visual GameObject linked to this data
+    // FIXME: Dost not consider multi-tile objects nor rotated objects
+
+    // This creates a new GameObject and adds it to our scene.
+    GameObject obj_go = new GameObject();
+
+    // Add Tile/GameObject to the dictionary
+    installedObjectGameObjectMap.Add(obj, obj_go);
+
+    obj_go.name = $"{obj.ObjectType}_{obj.Tile.X}_{obj.Tile.Y}";
+    obj_go.transform.position = new Vector3(obj.Tile.X, obj.Tile.Y, 0);
+    obj_go.transform.SetParent(this.transform, true);
+
+    // FIXME: Assume that the object must be a wall so
+    // use the hardcoded reference to the wall sprite.
+    obj_go.AddComponent<SpriteRenderer>().sprite = wallSprite;
+
+    // Register the callback so the GameObject is updated when object's info changes
+    obj.RegisterOnChangedCallback(OnInstalledObjectChanged);
+  }
+
+  void OnInstalledObjectChanged(InstalledObject obj)
+  {
+    Debug.LogError("OnInstalledObjectChanged -- Not implemented");
   }
 
 }

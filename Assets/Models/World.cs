@@ -3,6 +3,7 @@
 //=======================================================================
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class World
@@ -17,6 +18,8 @@ public class World
 
   // The tile height of the world
   public int Height { get; protected set; }
+
+  Action<InstalledObject> cbInstalledObjectCreated;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="World"/> class.
@@ -49,9 +52,33 @@ public class World
     installedObjectsPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0, 1, 1));
   }
 
+  /// <summary>
+  /// Creates an InstalledObject instance based on a prototype
+  /// </summary>
+  /// <param name="objectType">The InstalledObject type</param>
+  /// <param name="tile">The Tile to placed the InstalledObject on</param>
   public void PlaceInstalledObject(string objectType, Tile tile)
   {
+    // Debug.Log("PlaceInstalledObject");
+    // TODO: This function assumes 1x1 tiles -- Fix later
+    if (!installedObjectsPrototypes.ContainsKey(objectType))
+    {
+      Debug.LogError($"installedObjectPrototypes doesn't contain a prototype for key {objectType}");
+      return;
+    }
 
+    InstalledObject obj = InstalledObject.PlaceInstance(installedObjectsPrototypes[objectType], tile);
+
+    if (obj == null)
+    {
+      // Failed to place object -- most likely something was already there.
+      return;
+    }
+
+    if (cbInstalledObjectCreated != null)
+    {
+      cbInstalledObjectCreated(obj);
+    }
   }
 
   /// <summary>
@@ -65,7 +92,7 @@ public class World
       for (int y = 0; y < Height; y++)
       {
 
-        if (Random.Range(0, 2) == 0)
+        if (UnityEngine.Random.Range(0, 2) == 0)
         {
           tiles[x, y].Type = TileType.Empty;
         }
@@ -92,6 +119,22 @@ public class World
       return null;
     }
     return tiles[x, y];
+  }
+
+  /// <summary>
+  /// Register a function to be called back when an installe object is created.
+  /// </summary>
+  public void RegisterInstalledObjectCreated(Action<InstalledObject> callback)
+  {
+    cbInstalledObjectCreated += callback;
+  }
+
+  /// <summary>
+  /// Unregister a callback.
+  /// </summary>
+  public void UnregisterInstalledObjectCreated(Action<InstalledObject> callback)
+  {
+    cbInstalledObjectCreated -= callback;
   }
 
 }

@@ -2,9 +2,7 @@
 // Copyright Maxime "jellycat" Blanc 2021.
 //=======================================================================
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
 // Installed objects are things like walls, doors, and furniture.
 
@@ -12,9 +10,9 @@ public class InstalledObject
 {
   // This represents the BASE tile of the object -- but in practice, 
   // large objects may actually occupy multiple tiles.
-  Tile tile;
+  public Tile Tile { get; protected set; }
   // This object type will be queried by the visual system to know what sprite to render for this object.
-  string objectType;
+  public string ObjectType { get; protected set; }
   // This is a multiplier. so a value of 2 means you move twice as slowly (i.e. at half speed).
   // Tile types and other environmental effects may be combined.
   // E.g. a "rough" tile (cost of 2) with a table (cost of 3) that is on fire (cost of 3)
@@ -25,6 +23,8 @@ public class InstalledObject
   int width;
   int height;
 
+  Action<InstalledObject> cbOnChanged;
+
   // TODO: Implement larger objects
   // TODO: Implement object rotation
 
@@ -33,7 +33,7 @@ public class InstalledObject
   static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1)
   {
     InstalledObject obj = new InstalledObject();
-    obj.objectType = objectType;
+    obj.ObjectType = objectType;
     obj.movementCost = movementCost;
     obj.width = width;
     obj.height = height;
@@ -44,11 +44,11 @@ public class InstalledObject
   static public InstalledObject PlaceInstance(InstalledObject proto, Tile tile)
   {
     InstalledObject obj = new InstalledObject();
-    obj.objectType = proto.objectType;
+    obj.ObjectType = proto.ObjectType;
     obj.movementCost = proto.movementCost;
     obj.width = proto.width;
     obj.height = proto.height;
-    obj.tile = tile;
+    obj.Tile = tile;
 
     // FIXME: This assumes the object is 1x1.
     if (!tile.PlaceObject(obj))
@@ -60,5 +60,21 @@ public class InstalledObject
     }
 
     return obj;
+  }
+
+  /// <summary>
+  /// Register a function to be called back when object's info changes.
+  /// </summary>
+  public void RegisterOnChangedCallback(Action<InstalledObject> callback)
+  {
+    cbOnChanged += callback;
+  }
+
+  /// <summary>
+  /// Unregister a callback.
+  /// </summary>
+  public void UnregisterOnChangedCallback(Action<InstalledObject> callback)
+  {
+    cbOnChanged -= callback;
   }
 }

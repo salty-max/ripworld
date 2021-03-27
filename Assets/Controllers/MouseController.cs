@@ -13,8 +13,8 @@ public class MouseController : MonoBehaviour
   TileType buildModeTile = TileType.Floor;
   string buildModeObjectType;
   Vector3 lastFramePosition;
-  Vector3 dragStartPosition;
   Vector3 currFramePosition;
+  Vector3 dragStartPosition;
   List<GameObject> dragPreviewGameObjects;
 
   void Start()
@@ -68,6 +68,8 @@ public class MouseController : MonoBehaviour
 
     int start_x = Mathf.FloorToInt(dragStartPosition.x);
     int end_x = Mathf.FloorToInt(currFramePosition.x);
+    int start_y = Mathf.FloorToInt(dragStartPosition.y);
+    int end_y = Mathf.FloorToInt(currFramePosition.y);
 
     if (end_x < start_x)
     {
@@ -75,9 +77,6 @@ public class MouseController : MonoBehaviour
       end_x = start_x;
       start_x = tmp;
     }
-
-    int start_y = Mathf.FloorToInt(dragStartPosition.y);
-    int end_y = Mathf.FloorToInt(currFramePosition.y);
 
     if (end_y < start_y)
     {
@@ -87,9 +86,10 @@ public class MouseController : MonoBehaviour
     }
 
     // Clean up old drag previews
-    foreach (GameObject go in dragPreviewGameObjects)
+    while (dragPreviewGameObjects.Count > 0)
     {
-      dragPreviewGameObjects.Remove(go);
+      GameObject go = dragPreviewGameObjects[0];
+      dragPreviewGameObjects.RemoveAt(0);
       SimplePool.Despawn(go);
     }
 

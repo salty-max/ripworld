@@ -21,8 +21,8 @@ public class Tile
       _type = value;
 
       // Call the callback.
-      if (tileTypeChanged != null && oldType != _type)
-        tileTypeChanged(this);
+      if (cbTileTypeChanged != null && oldType != _type)
+        cbTileTypeChanged(this);
     }
   }
 
@@ -38,7 +38,7 @@ public class Tile
   public int Y { get; protected set; }
 
   // The function we callback any time our type changes
-  Action<Tile> tileTypeChanged;
+  Action<Tile> cbTileTypeChanged;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="Tile"/> class.
@@ -58,7 +58,7 @@ public class Tile
   /// </summary>
   public void RegisterTileTypeChangedCallback(Action<Tile> callback)
   {
-    tileTypeChanged += callback;
+    cbTileTypeChanged += callback;
   }
 
   /// <summary>
@@ -66,7 +66,7 @@ public class Tile
   /// </summary>
   public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
   {
-    tileTypeChanged -= callback;
+    cbTileTypeChanged -= callback;
   }
 
   public bool PlaceObject(InstalledObject objInstance)
