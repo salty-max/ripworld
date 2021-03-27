@@ -16,17 +16,17 @@ public class WorldController : MonoBehaviour
   public World World { get; protected set; }
 
   Dictionary<Tile, GameObject> tileGameObjectMap;
-  Dictionary<InstalledObject, GameObject> installedObjectGameObjectMap;
-  Dictionary<string, Sprite> installedObjectSprites;
+  Dictionary<Furniture, GameObject> furnitureGameObjectMap;
+  Dictionary<string, Sprite> furnitureSprites;
 
   void Start()
   {
-    installedObjectSprites = new Dictionary<string, Sprite>();
-    Sprite[] sprites = Resources.LoadAll<Sprite>("Images/InstalledObjects");
+    furnitureSprites = new Dictionary<string, Sprite>();
+    Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furnitures");
 
     foreach (Sprite s in sprites)
     {
-      installedObjectSprites[s.name] = s;
+      furnitureSprites[s.name] = s;
     }
 
     if (Instance != null)
@@ -38,11 +38,11 @@ public class WorldController : MonoBehaviour
     // Create a world with Empty tiles
     World = new World();
 
-    World.RegisterInstalledObjectCreated(OnInstalledObjectCreated);
+    World.RegisterFurnitureCreated(OnFurnitureCreated);
 
     // Instantiate dictionary that tracks which GameObject is rendering which Tile data
     tileGameObjectMap = new Dictionary<Tile, GameObject>();
-    installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
+    furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
     // Create a GameObject for each tile, so they show visually. (and redunt reduntantly)
     for (int x = 0; x < World.Width; x++)
@@ -142,9 +142,9 @@ public class WorldController : MonoBehaviour
     return World.GetTileAt(x, y);
   }
 
-  public void OnInstalledObjectCreated(InstalledObject obj)
+  public void OnFurnitureCreated(Furniture obj)
   {
-    // Debug.Log("OnInstalledObjectCreated");
+    // Debug.Log("OnFurnitureCreated");
     // Create a visual GameObject linked to this data
     // FIXME: Dost not consider multi-tile objects nor rotated objects
 
@@ -152,7 +152,7 @@ public class WorldController : MonoBehaviour
     GameObject obj_go = new GameObject();
 
     // Add Tile/GameObject to the dictionary
-    installedObjectGameObjectMap.Add(obj, obj_go);
+    furnitureGameObjectMap.Add(obj, obj_go);
 
     obj_go.name = $"{obj.ObjectType}_{obj.Tile.X}_{obj.Tile.Y}";
     obj_go.transform.position = new Vector3(obj.Tile.X, obj.Tile.Y, 0);
@@ -160,18 +160,18 @@ public class WorldController : MonoBehaviour
 
     // FIXME: Assume that the object must be a wall so
     // use the hardcoded reference to the wall sprite.
-    obj_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForInstalledObject(obj);
+    obj_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(obj);
     obj_go.GetComponent<SpriteRenderer>().sortingLayerName = "Furnitures";
 
     // Register the callback so the GameObject is updated when object's info changes
-    obj.RegisterOnChangedCallback(OnInstalledObjectChanged);
+    obj.RegisterOnChangedCallback(OnFurnitureChanged);
   }
 
-  Sprite GetSpriteForInstalledObject(InstalledObject obj)
+  Sprite GetSpriteForFurniture(Furniture obj)
   {
     if (!obj.LinksToNeighbour)
     {
-      return installedObjectSprites[obj.ObjectType];
+      return furnitureSprites[obj.ObjectType];
     }
 
     // Otherwise, the sprite name is more complicated
@@ -184,39 +184,39 @@ public class WorldController : MonoBehaviour
     Tile tile;
 
     tile = World.GetTileAt(x, y + 1);
-    if (tile != null && tile.InstalledObject != null && tile.InstalledObject.ObjectType == obj.ObjectType)
+    if (tile != null && tile.Furniture != null && tile.Furniture.ObjectType == obj.ObjectType)
     {
       spriteName += "N";
     }
     tile = World.GetTileAt(x + 1, y);
-    if (tile != null && tile.InstalledObject != null && tile.InstalledObject.ObjectType == obj.ObjectType)
+    if (tile != null && tile.Furniture != null && tile.Furniture.ObjectType == obj.ObjectType)
     {
       spriteName += "E";
     }
     tile = World.GetTileAt(x, y - 1);
-    if (tile != null && tile.InstalledObject != null && tile.InstalledObject.ObjectType == obj.ObjectType)
+    if (tile != null && tile.Furniture != null && tile.Furniture.ObjectType == obj.ObjectType)
     {
       spriteName += "S";
     }
     tile = World.GetTileAt(x - 1, y);
-    if (tile != null && tile.InstalledObject != null && tile.InstalledObject.ObjectType == obj.ObjectType)
+    if (tile != null && tile.Furniture != null && tile.Furniture.ObjectType == obj.ObjectType)
     {
       spriteName += "W";
     }
 
     // For example, if this object has all four neighbours of the same type,
     // the string will look like : Wall_NESW
-    if (!installedObjectSprites.ContainsKey(spriteName))
+    if (!furnitureSprites.ContainsKey(spriteName))
     {
-      Debug.LogError($"GetSpriteForInstalledObject -- No sprites with name {spriteName}");
+      Debug.LogError($"GetSpriteForFurniture -- No sprites with name {spriteName}");
       return null;
     }
-    return installedObjectSprites[spriteName];
+    return furnitureSprites[spriteName];
   }
 
-  void OnInstalledObjectChanged(InstalledObject obj)
+  void OnFurnitureChanged(Furniture obj)
   {
-    Debug.LogError("OnInstalledObjectChanged -- Not implemented");
+    Debug.LogError("OnFurnitureChanged -- Not implemented");
   }
 
 }

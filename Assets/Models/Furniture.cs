@@ -4,9 +4,9 @@
 
 using System;
 
-// Installed objects are things like walls, doors, and furniture.
+// Furnitures are things like walls, doors, and furniture.
 
-public class InstalledObject
+public class Furniture
 {
   // This represents the BASE tile of the object -- but in practice, 
   // large objects may actually occupy multiple tiles.
@@ -28,16 +28,16 @@ public class InstalledObject
 
   public bool LinksToNeighbour { get; protected set; }
 
-  Action<InstalledObject> cbOnChanged;
+  Action<Furniture> cbOnChanged;
 
   // TODO: Implement larger objects
   // TODO: Implement object rotation
 
-  protected InstalledObject() { }
+  protected Furniture() { }
 
-  static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1, bool LinksToNeighbour = false)
+  static public Furniture CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1, bool LinksToNeighbour = false)
   {
-    InstalledObject obj = new InstalledObject();
+    Furniture obj = new Furniture();
     obj.ObjectType = objectType;
     obj.movementCost = movementCost;
     obj.width = width;
@@ -47,9 +47,9 @@ public class InstalledObject
     return obj;
   }
 
-  static public InstalledObject PlaceInstance(InstalledObject proto, Tile tile)
+  static public Furniture PlaceInstance(Furniture proto, Tile tile)
   {
-    InstalledObject obj = new InstalledObject();
+    Furniture obj = new Furniture();
     obj.ObjectType = proto.ObjectType;
     obj.movementCost = proto.movementCost;
     obj.width = proto.width;
@@ -72,7 +72,7 @@ public class InstalledObject
   /// <summary>
   /// Register a function to be called back when object's info changes.
   /// </summary>
-  public void RegisterOnChangedCallback(Action<InstalledObject> callback)
+  public void RegisterOnChangedCallback(Action<Furniture> callback)
   {
     cbOnChanged += callback;
   }
@@ -80,7 +80,7 @@ public class InstalledObject
   /// <summary>
   /// Unregister a callback.
   /// </summary>
-  public void UnregisterOnChangedCallback(Action<InstalledObject> callback)
+  public void UnregisterOnChangedCallback(Action<Furniture> callback)
   {
     cbOnChanged -= callback;
   }

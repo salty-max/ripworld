@@ -29,8 +29,8 @@ public class Tile
   // LooseObject is something like a drill or a stack of metal sitting on the floor
   LooseObject looseObject;
 
-  // InstalledObject is something like a wall, door, or sofa.
-  public InstalledObject InstalledObject { get; protected set; }
+  // Furniture is something like a wall, door, or sofa.
+  public Furniture Furniture { get; protected set; }
 
   // The world containing the tile
   World world;
@@ -69,22 +69,22 @@ public class Tile
     cbTileTypeChanged -= callback;
   }
 
-  public bool PlaceObject(InstalledObject objInstance)
+  public bool PlaceObject(Furniture objInstance)
   {
     if (objInstance == null)
     {
       // Uninstalling whatever was here before.
-      InstalledObject = null;
+      Furniture = null;
       return true;
     }
 
-    if (InstalledObject != null)
+    if (Furniture != null)
     {
       Debug.LogError("Trying to assign a installed object to a tile that already has one.");
       return false;
     }
 
-    InstalledObject = objInstance;
+    Furniture = objInstance;
     return true;
   }
 }

@@ -123,8 +123,8 @@ public class MouseController : MonoBehaviour
           {
             if (buildModeIsObjects)
             {
-              // Create the InstalledObject and assign it to the Tile.
-              WorldController.Instance.World.PlaceInstalledObject(buildModeObjectType, tile);
+              // Create the Furniture and assign it to the Tile.
+              WorldController.Instance.World.PlaceFurniture(buildModeObjectType, tile);
             }
             else
             {
@@ -154,9 +154,9 @@ public class MouseController : MonoBehaviour
   /// <summary>
   /// Set left click mode to build walls.
   /// </summary>
-  public void SetMode_BuildInstalledObject(string objectType)
+  public void SetMode_BuildFurniture(string objectType)
   {
-    // Wall is not a Tile but an InstalledObject.
+    // Wall is not a Tile but an Furniture.
     buildModeIsObjects = true;
     buildModeObjectType = objectType;
   }
