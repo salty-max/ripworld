@@ -9,7 +9,9 @@ using UnityEngine.EventSystems;
 public class MouseController : MonoBehaviour
 {
   public GameObject boxCursorPrefab;
-  Tile.TileType buildModeTile = Tile.TileType.Floor;
+  bool buildModeIsObjects = false;
+  TileType buildModeTile = TileType.Floor;
+  string buildModeObjectType;
   Vector3 lastFramePosition;
   Vector3 dragStartPosition;
   Vector3 currFramePosition;
@@ -37,7 +39,7 @@ public class MouseController : MonoBehaviour
   // void UpdateCursor()
   // {
   //   // Update the box cursor position
-  //   Tile tileHovered = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
+  // Tile tileHovered = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
   //   if (tileHovered != null)
   //   {
   //     boxCursor.SetActive(true);
@@ -85,10 +87,9 @@ public class MouseController : MonoBehaviour
     }
 
     // Clean up old drag previews
-    while (dragPreviewGameObjects.Count > 0)
+    foreach (GameObject go in dragPreviewGameObjects)
     {
-      GameObject go = dragPreviewGameObjects[0];
-      dragPreviewGameObjects.RemoveAt(0);
+      dragPreviewGameObjects.Remove(go);
       SimplePool.Despawn(go);
     }
 
@@ -117,10 +118,19 @@ public class MouseController : MonoBehaviour
       {
         for (int y = start_y; y <= end_y; y++)
         {
-          Tile t = WorldController.Instance.World.GetTileAt(x, y);
-          if (t != null)
+          Tile tile = WorldController.Instance.World.GetTileAt(x, y);
+          if (tile != null)
           {
-            t.Type = buildModeTile;
+            if (buildModeIsObjects)
+            {
+              // Create the InstalledObject and assign it to the Tile.
+              WorldController.Instance.World.PlaceInstalledObject(buildModeObjectType, tile);
+            }
+            else
+            {
+              // Tile-changing mode.
+              tile.Type = buildModeTile;
+            }
           }
         }
       }
@@ -141,13 +151,31 @@ public class MouseController : MonoBehaviour
     Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
   }
 
-  public void SetMode_BuildFloor()
+  /// <summary>
+  /// Set left click mode to build walls.
+  /// </summary>
+  public void SetMode_BuildInstalledObject(string objectType)
   {
-    buildModeTile = Tile.TileType.Floor;
+    // Wall is not a Tile but an InstalledObject.
+    buildModeIsObjects = true;
+    buildModeObjectType = objectType;
   }
 
+  /// <summary>
+  /// Set left click mode to build floors.
+  /// </summary>
+  public void SetMode_BuildFloor()
+  {
+    buildModeIsObjects = false;
+    buildModeTile = TileType.Floor;
+  }
+
+  /// <summary>
+  /// Set left click mode to bulldoze.
+  /// </summary>
   public void SetMode_Bulldoze()
   {
-    buildModeTile = Tile.TileType.Empty;
+    buildModeIsObjects = false;
+    buildModeTile = TileType.Empty;
   }
 }
