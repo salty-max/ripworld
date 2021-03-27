@@ -3,6 +3,7 @@
 //=======================================================================
 
 using UnityEngine;
+using System.Collections.Generic;
 
 public class WorldController : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class WorldController : MonoBehaviour
 
   // The world and tile data
   public World World { get; protected set; }
+
+  Dictionary<Tile, GameObject> tileGameObjectMap;
 
   void Start()
   {
@@ -25,6 +28,9 @@ public class WorldController : MonoBehaviour
     // Create a world with Empty tiles
     World = new World();
 
+    // Instantiate dictionary that tracks which GameObject is rendering which Tile data
+    tileGameObjectMap = new Dictionary<Tile, GameObject>();
+
     // Create a GameObject for each tile, so they show visually. (and redunt reduntantly)
     for (int x = 0; x < World.Width; x++)
     {
@@ -35,6 +41,10 @@ public class WorldController : MonoBehaviour
 
         // This creates a new GameObject and adds it to our scene.
         GameObject tile_go = new GameObject();
+
+        // Add Tile/GameObject to the dictionary
+        tileGameObjectMap.Add(tile_data, tile_go);
+
         tile_go.name = "Tile_" + x + "_" + y;
         tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y, 0);
         tile_go.transform.SetParent(this.transform, true);
@@ -43,8 +53,8 @@ public class WorldController : MonoBehaviour
         // because all the tiles are empty right now.
         tile_go.AddComponent<SpriteRenderer>();
 
-        // Use a lambda to create an anonymous function to wrap the callback function
-        tile_data.RegisterTileTypeChangedCallback((tile) => { OnTileTypeChanged(tile, tile_go); });
+        // Register the callback so the GameObject is updated when the Tile type is changed
+        tile_data.RegisterTileTypeChangedCallback(OnTileTypeChanged);
       }
     }
 
@@ -54,14 +64,47 @@ public class WorldController : MonoBehaviour
 
   void Update() { }
 
-  // This function is called whenever a tile's type gets changed.
-  void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
+  void DestroyAllTileGameObjects()
   {
-    if (tile_data.Type == Tile.TileType.Floor)
+    // This function might get called when changing floors/levels.
+    // Destroy all visual **GameObjects** but not the tile data!
+
+    foreach (KeyValuePair<Tile, GameObject> pair in tileGameObjectMap)
+    {
+      Tile tile_data = pair.Key;
+      GameObject tile_go = pair.Value;
+
+      // Remove the pair from the map
+      tileGameObjectMap.Remove(tile_data);
+      // Unregister the callback
+      tile_data.UnregisterTileTypeChangedCallback(OnTileTypeChanged);
+      // Destroy the visual GO
+      Destroy(tile_go);
+    }
+  }
+
+  // This function is called whenever a tile's type gets changed.
+  void OnTileTypeChanged(Tile tile_data)
+  {
+    if (!tileGameObjectMap.ContainsKey(tile_data))
+    {
+      Debug.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe to unregister a callback?");
+      return;
+    }
+
+    GameObject tile_go = tileGameObjectMap[tile_data];
+
+    if (tile_go == null)
+    {
+      Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe to unregister a callback?");
+      return;
+    }
+
+    if (tile_data.Type == TileType.Floor)
     {
       tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
     }
-    else if (tile_data.Type == Tile.TileType.Empty)
+    else if (tile_data.Type == TileType.Empty)
     {
       tile_go.GetComponent<SpriteRenderer>().sprite = null;
     }
@@ -71,6 +114,11 @@ public class WorldController : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// Get Tile at given world coordinates.
+  /// </summary>
+  /// <returns>The <see cref="Tile"/>.</returns>
+  /// <param name="coord">The world coordinates to get Tile from</param>
   public Tile GetTileAtWorldCoord(Vector3 coord)
   {
     int x = Mathf.FloorToInt(coord.x);

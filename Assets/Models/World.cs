@@ -3,12 +3,14 @@
 //=======================================================================
 
 using UnityEngine;
+using System.Collections.Generic;
 
 public class World
 {
 
   // A two-dimensional array to hold our tile data.
   Tile[,] tiles;
+  Dictionary<string, InstalledObject> installedObjectsPrototypes;
 
   // The tile width of the world.
   public int Width { get; protected set; }
@@ -37,6 +39,19 @@ public class World
     }
 
     Debug.Log("World created with " + (Width * Height) + " tiles.");
+
+    CreateInstalledObjectPrototypes();
+  }
+
+  void CreateInstalledObjectPrototypes()
+  {
+    installedObjectsPrototypes = new Dictionary<string, InstalledObject>();
+    installedObjectsPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0, 1, 1));
+  }
+
+  public void PlaceInstalledObject(string objectType, Tile tile)
+  {
+
   }
 
   /// <summary>
@@ -52,11 +67,11 @@ public class World
 
         if (Random.Range(0, 2) == 0)
         {
-          tiles[x, y].Type = Tile.TileType.Empty;
+          tiles[x, y].Type = TileType.Empty;
         }
         else
         {
-          tiles[x, y].Type = Tile.TileType.Floor;
+          tiles[x, y].Type = TileType.Floor;
         }
 
       }

@@ -3,12 +3,13 @@
 //=======================================================================
 
 using System;
+using UnityEngine;
+
+// TileType is the base type of the tile.
+public enum TileType { Empty, Floor };
 
 public class Tile
 {
-
-  // TileType is the base type of the tile.
-  public enum TileType { Empty, Floor };
 
   private TileType _type = TileType.Empty;
   public TileType Type
@@ -63,9 +64,27 @@ public class Tile
   /// <summary>
   /// Unregister a callback.
   /// </summary>
-  public void UnegisterTileTypeChangedCallback(Action<Tile> callback)
+  public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
   {
     tileTypeChanged -= callback;
   }
 
+  public bool PlaceObject(InstalledObject objInstance)
+  {
+    if (objInstance == null)
+    {
+      // Uninstalling whatever was here before.
+      installedObject = null;
+      return true;
+    }
+
+    if (installedObject != null)
+    {
+      Debug.LogError("Trying to assign a installed object to a tile that already has one.");
+      return false;
+    }
+
+    installedObject = objInstance;
+    return true;
+  }
 }
