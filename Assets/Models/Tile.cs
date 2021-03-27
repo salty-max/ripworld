@@ -27,7 +27,7 @@ public class Tile
   }
 
   // LooseObject is something like a drill or a stack of metal sitting on the floor
-  LooseObject looseObject;
+  Inventory inventory;
 
   // Furniture is something like a wall, door, or sofa.
   public Furniture Furniture { get; protected set; }
