@@ -30,7 +30,7 @@ public class Tile
   LooseObject looseObject;
 
   // InstalledObject is something like a wall, door, or sofa.
-  InstalledObject installedObject;
+  public InstalledObject InstalledObject { get; protected set; }
 
   // The world containing the tile
   World world;
@@ -74,17 +74,17 @@ public class Tile
     if (objInstance == null)
     {
       // Uninstalling whatever was here before.
-      installedObject = null;
+      InstalledObject = null;
       return true;
     }
 
-    if (installedObject != null)
+    if (InstalledObject != null)
     {
       Debug.LogError("Trying to assign a installed object to a tile that already has one.");
       return false;
     }
 
-    installedObject = objInstance;
+    InstalledObject = objInstance;
     return true;
   }
 }

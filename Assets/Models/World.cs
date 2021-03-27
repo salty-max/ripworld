@@ -49,7 +49,7 @@ public class World
   void CreateInstalledObjectPrototypes()
   {
     installedObjectsPrototypes = new Dictionary<string, InstalledObject>();
-    installedObjectsPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0, 1, 1));
+    installedObjectsPrototypes.Add("Wall", InstalledObject.CreatePrototype("Wall", 0, 1, 1, true));
   }
 
   /// <summary>

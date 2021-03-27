@@ -44,6 +44,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Tiles
+    uniqueID: 1336970591
+    locked: 0
+  - name: Furnitures
+    uniqueID: 3295386041
+    locked: 0
   - name: TileUI
     uniqueID: 192173047
     locked: 0

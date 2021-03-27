@@ -52,7 +52,7 @@ TextureImporter:
     second: Wall_NES
   - first:
       213: -6942478570949865756
-    second: Wall_NSW
+    second: Wall_NES
   - first:
       213: 5808592622507235539
     second: walls_17
@@ -91,7 +91,7 @@ TextureImporter:
     second: walls_28
   - first:
       213: 7640190859277038996
-    second: Wall_NE
+    second: Wall_NW
   - first:
       213: 5298484932928284341
     second: walls_30
@@ -373,11 +373,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NES
+      name: Wall_NSW
       rect:
         serializedVersion: 2
         x: 192
-        y: 336
+        y: 335
         width: 24
         height: 24
       alignment: 6
@@ -394,11 +394,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NSW
+      name: Wall_NES
       rect:
         serializedVersion: 2
         x: 216
-        y: 336
+        y: 335
         width: 24
         height: 24
       alignment: 6
@@ -499,7 +499,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NW
+      name: Wall_NE
       rect:
         serializedVersion: 2
         x: 0
@@ -541,7 +541,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NE
+      name: Wall_NW
       rect:
         serializedVersion: 2
         x: 48
